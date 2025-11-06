@@ -4,16 +4,13 @@ import H1 from "@/components/h1";
 import { Button } from "@/components/ui/button";
 import React, { useTransition } from "react";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
-export default function Page({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | string[] | undefined };
-}) {
+export default function Page() {
   // const { success, canceled } = React.use(searchParams);
-  const success = searchParams["success"];
-  const canceled = searchParams["canceled"];
+  const searchParams = useSearchParams();
+  const success = searchParams.get("success");
+  const canceled = searchParams.get("canceled");
   const [isPending, startTransition] = useTransition();
   const { data: session, update, status } = useSession();
   const router = useRouter();
