@@ -42,6 +42,29 @@ const config = {
       },
     }),
   ],
+  callbacks: {
+    async jwt({ token, user, trigger }) {
+      if (user && user.id) {
+        token.userId = user.id;
+        token.email = user.email;
+        token.hasAccess = user.hasAccess;
+      }
+      if (trigger === "update" && token.email) {
+        const freshUser = await getUserByEmail(token.email);
+        if (freshUser) {
+          token.hasAccess = freshUser.hasAccess;
+        }
+      }
+      return token;
+    },
+    session({ session, token }) {
+      if (session.user) {
+        session.user.id = token.userId;
+        session.user.hasAccess = token.hasAccess;
+      }
+      return session;
+    },
+  },
 } satisfies NextAuthConfig;
 
 export const {

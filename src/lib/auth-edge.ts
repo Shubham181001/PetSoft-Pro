@@ -1,5 +1,4 @@
 import { NextAuthConfig } from "next-auth";
-import { getUserByEmail } from "./server-utils";
 
 export const nextAuthEdgeConfig = {
   pages: {
@@ -48,7 +47,7 @@ export const nextAuthEdgeConfig = {
       }
       return false;
     },
-    jwt: async ({ token, user, trigger }) => {
+    jwt: async ({ token, user }) => {
       if (user && user.id) {
         //on sign-in
         token.userId = user.id;
@@ -57,12 +56,12 @@ export const nextAuthEdgeConfig = {
       }
 
       //on every request
-      if (trigger === "update") {
-        const userFromDb = await getUserByEmail(token.email);
-        if (userFromDb) {
-          token.hasAccess = userFromDb.hasAccess;
-        }
-      }
+    //   if (trigger === "update") {
+    //     const userFromDb = await getUserByEmail(token.email);
+    //     if (userFromDb) {
+    //       token.hasAccess = userFromDb.hasAccess;
+    //     }
+    //   }
 
       return token;
     },
@@ -73,5 +72,5 @@ export const nextAuthEdgeConfig = {
       return session;
     },
   },
-  providers: [],
+  providers: []
 } satisfies NextAuthConfig;
