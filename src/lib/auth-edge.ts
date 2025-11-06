@@ -1,5 +1,4 @@
-import { NextAuthConfig } from "next-auth";
-import prisma from "./db";
+import type { NextAuthConfig } from "next-auth";
 
 export const nextAuthEdgeConfig = {
   pages: {
@@ -57,6 +56,8 @@ export const nextAuthEdgeConfig = {
       }
 
       if (trigger === "update") {
+        // dynamically import prisma only when needed to keep the edge bundle small
+        const { default: prisma } = await import("./db");
         const userFromDb = await prisma.user.findUnique({
           where: {
             email: token.email,
