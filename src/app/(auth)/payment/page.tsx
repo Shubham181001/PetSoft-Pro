@@ -2,16 +2,18 @@
 // import { createCheckoutSession } from "@/actions/actions";
 import H1 from "@/components/h1";
 import { Button } from "@/components/ui/button";
-import React, { Usable, useTransition } from "react";
+import React, { useTransition } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 export default function Page({
   searchParams,
 }: {
-  searchParams: Usable<{ [key: string]: string | string[] | undefined }>;
+  searchParams: { [key: string]: string | string[] | undefined };
 }) {
-  const { success, canceled } = React.use(searchParams);
+  // const { success, canceled } = React.use(searchParams);
+  const success = searchParams["success"];
+  const canceled = searchParams["canceled"];
   const [isPending, startTransition] = useTransition();
   const { data: session, update, status } = useSession();
   const router = useRouter();
