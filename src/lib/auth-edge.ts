@@ -47,7 +47,7 @@ export const nextAuthEdgeConfig = {
       }
       return false;
     },
-    jwt: async ({ token, user, trigger }) => {
+    jwt: async ({ token, user }) => {
       if (user && user.id) {
         //on sign-in
         token.userId = user.id;
@@ -55,18 +55,16 @@ export const nextAuthEdgeConfig = {
         token.hasAccess = user.hasAccess;
       }
 
-      if (trigger === "update") {
-        // dynamically import prisma only when needed to keep the edge bundle small
-        const { default: prisma } = await import("./db");
-        const userFromDb = await prisma.user.findUnique({
-          where: {
-            email: token.email,
-          },
-        });
-        if (userFromDb) {
-          token.hasAccess = userFromDb.hasAccess;
-        }
-      }
+      //   if (trigger === "update") {
+      //     const userFromDb = await prisma.user.findUnique({
+      //       where: {
+      //         email: token.email,
+      //       },
+      //     });
+      //     if (userFromDb) {
+      //       token.hasAccess = userFromDb.hasAccess;
+      //     }
+      //   }
 
       return token;
     },

@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import { getUserByEmail } from "./server-utils";
 import { authSchema } from "./validations";
 import { nextAuthEdgeConfig } from "./auth-edge";
+import prisma from "./db";
 
 const config = {
   ...nextAuthEdgeConfig,
@@ -42,6 +43,33 @@ const config = {
       },
     }),
   ],
+  callbacks: {
+    // Do NOT include `authorized` here; middleware (edge) handles it.
+
+    async jwt({ token, user, trigger }) {
+      if (user && user.id) {
+        token.userId = user.id;
+        token.email = user.email;
+        token.hasAccess = user.hasAccess;
+      }
+
+      // DB lookup only on Node
+      if (trigger === "update" && token.email) {
+        const userFromDb = await prisma.user.findUnique({
+          where: { email: token.email as string },
+          select: { hasAccess: true },
+        });
+        if (userFromDb) token.hasAccess = userFromDb.hasAccess;
+      }
+      return token;
+    },
+
+    async session({ session, token }) {
+      session.user.id = token.userId;
+      session.user.hasAccess = token.hasAccess;
+      return session;
+    },
+  },
 } satisfies NextAuthConfig;
 
 export const {
