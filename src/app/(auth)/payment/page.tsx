@@ -6,13 +6,14 @@ import React, { useTransition } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
-export default function Page({
-  searchParams,
-}: {
-  searchParams?: { [key: string]: string | string[] | undefined };
-}) {
-  const success = searchParams?.success === "true";
-  const canceled = searchParams?.canceled === "true";
+type PageProps = {
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
+};
+
+export default function Page({ searchParams }: PageProps) {
+    const {success, canceled} = React.use(searchParams!);
+  // const success = searchParams?.success === "true";
+  // const canceled = searchParams?.canceled === "true";
   const [isPending, startTransition] = useTransition();
   const { data: session, update, status } = useSession();
   const router = useRouter();
