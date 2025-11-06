@@ -42,33 +42,6 @@ const config = {
       },
     }),
   ],
-  // callbacks: {
-  //   async jwt({ token, user, trigger }) {
-  //     if (user && user.id) {
-  //       token.userId = user.id;
-  //       token.email = user.email;
-  //       token.hasAccess = user.hasAccess;
-  //     }
-  //     if (trigger === "update") {
-  //       const userFromDb = await prisma.user.findUnique({
-  //         where: {
-  //           email: token.email,
-  //         },
-  //       });
-  //       if (userFromDb) {
-  //         token.hasAccess = userFromDb.hasAccess;
-  //       }
-  //     }
-  //     return token;
-  //   },
-  //   session({ session, token }) {
-  //     if (session.user) {
-  //       session.user.id = token.userId;
-  //       session.user.hasAccess = token.hasAccess;
-  //     }
-  //     return session;
-  //   },
-  // },
 } satisfies NextAuthConfig;
 
 export const {

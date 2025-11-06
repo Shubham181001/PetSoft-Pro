@@ -56,14 +56,7 @@ export const nextAuthEdgeConfig = {
         token.hasAccess = user.hasAccess;
       }
 
-      //on every request
-    //   if (trigger === "update") {
-    //     const userFromDb = await getUserByEmail(token.email);
-    //     if (userFromDb) {
-    //       token.hasAccess = userFromDb.hasAccess;
-    //     }
-    //   }
-    if (trigger === "update") {
+      if (trigger === "update") {
         const userFromDb = await prisma.user.findUnique({
           where: {
             email: token.email,
@@ -83,5 +76,5 @@ export const nextAuthEdgeConfig = {
       return session;
     },
   },
-  providers: []
+  providers: [],
 } satisfies NextAuthConfig;
