@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import { getUserByEmail } from "./server-utils";
 import { authSchema } from "./validations";
 import { nextAuthEdgeConfig } from "./auth-edge";
+import prisma from "./db";
 
 const config = {
   ...nextAuthEdgeConfig,
@@ -49,10 +50,14 @@ const config = {
         token.email = user.email;
         token.hasAccess = user.hasAccess;
       }
-      if (trigger === "update" && token.email) {
-        const freshUser = await getUserByEmail(token.email);
-        if (freshUser) {
-          token.hasAccess = freshUser.hasAccess;
+      if (trigger === "update") {
+        const userFromDb = await prisma.user.findUnique({
+          where: {
+            email: token.email,
+          },
+        });
+        if (userFromDb) {
+          token.hasAccess = userFromDb.hasAccess;
         }
       }
       return token;
