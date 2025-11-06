@@ -1,4 +1,5 @@
 import { NextAuthConfig } from "next-auth";
+import prisma from "./db";
 
 export const nextAuthEdgeConfig = {
   pages: {
@@ -47,7 +48,7 @@ export const nextAuthEdgeConfig = {
       }
       return false;
     },
-    jwt: async ({ token, user }) => {
+    jwt: async ({ token, user, trigger }) => {
       if (user && user.id) {
         //on sign-in
         token.userId = user.id;
@@ -62,6 +63,16 @@ export const nextAuthEdgeConfig = {
     //       token.hasAccess = userFromDb.hasAccess;
     //     }
     //   }
+    if (trigger === "update") {
+        const userFromDb = await prisma.user.findUnique({
+          where: {
+            email: token.email,
+          },
+        });
+        if (userFromDb) {
+          token.hasAccess = userFromDb.hasAccess;
+        }
+      }
 
       return token;
     },
