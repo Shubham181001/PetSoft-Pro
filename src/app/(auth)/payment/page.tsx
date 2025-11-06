@@ -1,16 +1,15 @@
-"use client";
-// import { createCheckoutSession } from "@/actions/actions";
 import H1 from "@/components/h1";
-import { Button } from "@/components/ui/button";
-import React, { useTransition } from "react";
+// import { Button } from "@/components/ui/button";
+import React, { Suspense, useTransition } from "react";
 import { useSession } from "next-auth/react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
+import PaymentActions from "@/components/payment-actions";
 
 export default function Page() {
   // const { success, canceled } = React.use(searchParams);
-  const searchParams = useSearchParams();
-  const success = searchParams.get("success");
-  const canceled = searchParams.get("canceled");
+  // const searchParams = useSearchParams();
+  // const success = searchParams.get("success");
+  // const canceled = searchParams.get("canceled");
   const [isPending, startTransition] = useTransition();
   const { data: session, update, status } = useSession();
   const router = useRouter();
@@ -37,43 +36,16 @@ export default function Page() {
     <main className="flex flex-col items-center space-y-10">
       <H1>PetSoft Pro Access requires payment</H1>
 
-      {success && (
-        <Button
-          disabled={status === "loading" || session?.user.hasAccess}
-          onClick={async () => {
-            await update(true);
-            router.push("/app/dashboard");
-          }}
-        >
-          Access PetSoft Pro.
-        </Button>
-      )}
-
-      {!success && (
-        <Button
-          disabled={isPending}
-          onClick={
-            /*async () => {
-            startTransition(async () => {
-              await createCheckoutSession();
-            });
-          }*/
-            handleCheckout
-          }
-        >
-          Buy Lifetime access for just $299.
-        </Button>
-      )}
-      {success && (
-        <p className="text-sm text-green-700">
-          Payment successful. You now have lifetime access to PetSoft Pro
-        </p>
-      )}
-      {canceled && (
-        <p className="text-sm text-red-700">
-          Payment cancelled. You can try again.
-        </p>
-      )}
+      <Suspense fallback={null}>
+        <PaymentActions
+          handleCheckout={handleCheckout}
+          session={session}
+          update={update}
+          status={status}
+          router={router}
+          isPending={isPending}
+        />
+      </Suspense>
     </main>
   );
 }
