@@ -1,5 +1,4 @@
 "use client";
-// import { createCheckoutSession } from "@/actions/actions";
 import H1 from "@/components/h1";
 import { Button } from "@/components/ui/button";
 import React, { useTransition } from "react";
@@ -12,8 +11,6 @@ type PageProps = {
 
 export default function Page({ searchParams }: PageProps) {
     const {success, canceled} = React.use(searchParams!);
-  // const success = searchParams?.success === "true";
-  // const canceled = searchParams?.canceled === "true";
   const [isPending, startTransition] = useTransition();
   const { data: session, update, status } = useSession();
   const router = useRouter();

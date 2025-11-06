@@ -1,48 +1,10 @@
-import NextAuth, { NextAuthConfig } from "next-auth";
-import Credentials from "next-auth/providers/credentials";
-import bcrypt from "bcryptjs";
+import { NextAuthConfig } from "next-auth";
 import { getUserByEmail } from "./server-utils";
-import { authSchema } from "./validations";
 
-const config = {
+export const nextAuthEdgeConfig = {
   pages: {
     signIn: "/login",
   },
-  providers: [
-    Credentials({
-      async authorize(credentials) {
-        //runs on login
-
-        //validate the object
-        const validatedFormData = authSchema.safeParse(credentials);
-        if (!validatedFormData.success) {
-          return null;
-        }
-
-        //extract the values
-        const { email, password } = validatedFormData.data;
-
-        const user = await getUserByEmail(email);
-
-        if (!user) {
-          console.log("No user found");
-          return null;
-        }
-
-        const passwordsMatch = await bcrypt.compare(
-          password,
-          user.hashedPassword
-        );
-
-        if (!passwordsMatch) {
-          console.log("Invalid Credentials");
-          return null;
-        }
-
-        return user;
-      },
-    }),
-  ],
   callbacks: {
     authorized: ({ auth, request }) => {
       const isLoggedIn = Boolean(auth?.user);
@@ -95,9 +57,9 @@ const config = {
       }
 
       //on every request
-      if(trigger === "update"){
+      if (trigger === "update") {
         const userFromDb = await getUserByEmail(token.email);
-        if(userFromDb){
+        if (userFromDb) {
           token.hasAccess = userFromDb.hasAccess;
         }
       }
@@ -111,11 +73,5 @@ const config = {
       return session;
     },
   },
+  providers: [],
 } satisfies NextAuthConfig;
-
-export const {
-  auth,
-  signIn,
-  signOut,
-  handlers: { GET, POST },
-} = NextAuth(config);
