@@ -33,6 +33,7 @@ export default function PetContextProvider({
     (state, { action, payload }) => {
       switch (action) {
         case "add":
+          console.log("Adding pet optimistically", payload);
           return [...state, { ...payload, id: Math.random().toString() }];
         case "edit":
           return state.map((pet) => {

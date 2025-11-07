@@ -95,8 +95,10 @@ export async function logOut() {
 // -----Pet actions-------
 export async function addPet(newPet: unknown) {
   const session = await checkAuth();
+  console.log("Adding pet for user:", session.user.id);
 
   const validatedPet = petFormSchema.safeParse(newPet);
+  console.log("Validated pet:", validatedPet);
   if (!validatedPet.success) {
     return {
       message: "Invalid pet data",
